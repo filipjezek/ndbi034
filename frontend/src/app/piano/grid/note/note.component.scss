@@ -1,0 +1,21 @@
+.note {
+  position: absolute;
+  height: var(--row-height);
+  background-color: #6592ea;
+  display: flex;
+  align-items: stretch;
+
+  &:focus {
+    outline: 2px solid black;
+  }
+
+  .left,
+  .right {
+    width: 5px;
+    cursor: ew-resize;
+  }
+  .center {
+    flex-basis: 100%;
+    cursor: move;
+  }
+}

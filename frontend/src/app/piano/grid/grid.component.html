@@ -1,1 +1,33 @@
-<canvas #canv></canvas>
+<canvas
+  #canv
+  [width]="colCount * colWidth"
+  [height]="rowCount * rowHeight"
+  (mousedown)="startNote($event)"
+>
+</canvas>
+@for (note of notes; track note) {
+<ndbi034-note
+  [note]="note"
+  (keydown.delete)="deleteNote(note)"
+  [colWidth]="colWidth"
+  [rowHeight]="rowHeight"
+  (resizeLeft)="startResize(note, true)"
+  (resizeRight)="startResize(note, false)"
+  (move)="startMove(note, $event)"
+></ndbi034-note>
+} @if (currNote) {
+<ndbi034-note
+  class="curr-note"
+  [note]="
+    currNote.length < 1
+      ? {
+          y: currNote.y,
+          x: currNote.x + currNote.length - 1,
+          length: -currNote.length + 2
+        }
+      : currNote
+  "
+  [colWidth]="colWidth"
+  [rowHeight]="rowHeight"
+></ndbi034-note>
+}

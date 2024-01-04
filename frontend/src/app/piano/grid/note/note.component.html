@@ -1,1 +1,11 @@
-<p>note works!</p>
+<div
+  class="note"
+  [style.left.px]="note.x * colWidth"
+  [style.width.px]="note.length * colWidth"
+  [style.top.px]="note.y * rowHeight"
+  tabindex="0"
+>
+  <span class="left" (mousedown)="resizeLeft.emit()"></span>
+  <span class="center" (mousedown)="move.emit($event)"></span>
+  <span class="right" (mousedown)="resizeRight.emit()"></span>
+</div>

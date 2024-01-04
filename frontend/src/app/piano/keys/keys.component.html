@@ -11,6 +11,6 @@
   (mouseleave)="isMouseDown ? endNote(key + octave) : null"
   (mouseup)="endNote(key + octave)"
 >
-  {{ key }}{{ key == "C" ? octave : "" }}
+  {{ key.endsWith("#") ? "" : key }}{{ key == "C" ? octave : "" }}
 </button>
 }

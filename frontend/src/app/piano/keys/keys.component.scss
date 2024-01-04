@@ -7,11 +7,13 @@
   width: 100%;
   border-radius: 0;
   border: 1px solid #ddd;
+  border-right: 1px solid black;
   background-color: white;
   height: calc(var(--row-height) * 2);
   text-align: left;
   padding-left: 8px;
   color: #737373;
+  font-size: 10px;
 
   &.black {
     background-color: black;
@@ -28,6 +30,10 @@
 
   &.large {
     height: calc(var(--row-height) * 1.5);
+  }
+
+  &:last-child {
+    border-bottom: 1px solid black;
   }
 }
 :host.mousedown .key:hover {

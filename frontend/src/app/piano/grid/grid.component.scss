@@ -1,0 +1,17 @@
+:host {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow-x: auto;
+  --col-count: 100;
+  --col-width: 20px;
+  position: relative;
+}
+canvas {
+  width: calc(var(--col-width) * var(--col-count));
+  height: calc(var(--row-height) * 12);
+  border-bottom: 1px solid black;
+}
+.curr-note,
+.curr-note ::ng-deep * {
+  cursor: default !important;
+}

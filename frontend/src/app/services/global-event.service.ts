@@ -14,6 +14,7 @@ export class GlobalEventService {
   public escapePressed: Observable<KeyboardEvent>;
   public mousePressed: Observable<MouseEvent>;
   public mouseReleased: Observable<MouseEvent>;
+  public mouseMoved: Observable<MouseEvent>;
 
   constructor(@Inject(DOCUMENT) private doc: Document) {
     this.documentClicked = fromEvent<MouseEvent>(this.doc, 'click').pipe(
@@ -35,10 +36,13 @@ export class GlobalEventService {
       filter((e) => e.which === 27 || e.key === 'Escape'),
       share()
     );
-    this.mouseReleased = fromEvent<MouseEvent>(this.doc, 'mouseup').pipe(
+    this.mouseReleased = fromEvent<MouseEvent>(this.doc.body, 'mouseup').pipe(
       share()
     );
-    this.mousePressed = fromEvent<MouseEvent>(this.doc, 'mousedown').pipe(
+    this.mousePressed = fromEvent<MouseEvent>(this.doc.body, 'mousedown').pipe(
+      share()
+    );
+    this.mouseMoved = fromEvent<MouseEvent>(this.doc.body, 'mousemove').pipe(
       share()
     );
   }

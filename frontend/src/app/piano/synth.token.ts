@@ -6,7 +6,7 @@ export const WEBAUDIO_SYNTH = new InjectionToken<WebAudioTinySynth>(
   {
     factory: () => {
       const synth = new WebAudioTinySynth();
-      synth.setProgram(0, 20);
+      synth.setProgram(1, 20);
       return synth;
     },
     providedIn: 'root',
