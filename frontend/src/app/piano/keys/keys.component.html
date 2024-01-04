@@ -1,0 +1,16 @@
+@for (key of scale; track key) {
+<button
+  class="key"
+  [class.black]="key.endsWith('#')"
+  [class.large]="
+    !key.endsWith('#') &&
+    (!scale[$index - 1]?.endsWith('#') || !scale[$index + 1]?.endsWith('#'))
+  "
+  (mouseenter)="isMouseDown ? openNote(key + octave) : null"
+  (mousedown)="openNote(key + octave)"
+  (mouseleave)="isMouseDown ? endNote(key + octave) : null"
+  (mouseup)="endNote(key + octave)"
+>
+  {{ key }}{{ key == "C" ? octave : "" }}
+</button>
+}

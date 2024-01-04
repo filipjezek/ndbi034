@@ -1,0 +1,36 @@
+:host {
+  display: block;
+}
+
+.key {
+  display: block;
+  width: 100%;
+  border-radius: 0;
+  border: 1px solid #ddd;
+  background-color: white;
+  height: calc(var(--row-height) * 2);
+  text-align: left;
+  padding-left: 8px;
+  color: #737373;
+
+  &.black {
+    background-color: black;
+    color: #ddd;
+    width: 75%;
+    margin-left: 25%;
+    height: var(--row-height);
+    margin-top: calc(var(--row-height) * -1);
+    position: relative;
+    z-index: 1;
+    top: calc(var(--row-height) * 0.5);
+    border: none;
+  }
+
+  &.large {
+    height: calc(var(--row-height) * 1.5);
+  }
+}
+:host.mousedown .key:hover {
+  background-color: #ddd;
+  color: #737373;
+}
