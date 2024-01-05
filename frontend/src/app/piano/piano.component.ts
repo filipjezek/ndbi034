@@ -1,8 +1,11 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
   Inject,
+  ViewChild,
 } from '@angular/core';
 import { KeysComponent } from './keys/keys.component';
 import { GridComponent } from './grid/grid.component';
@@ -21,11 +24,16 @@ import { Writer } from 'midi-writer-js/build/types/writer';
   styleUrl: './piano.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PianoComponent {
+export class PianoComponent implements AfterViewInit {
+  @ViewChild('flexCont') flexContainer: ElementRef<HTMLDivElement>;
+
   midiOptions: { notes: (Note & { name: string })[]; bpm: number } = {
     notes: [],
     bpm: 120,
   };
+  octaves = 8;
+  firstOctave = 0;
+  rowHeight = 12;
   private writer: Writer;
   timePosition = 0;
   private timePositionInterval: any;
@@ -35,6 +43,13 @@ export class PianoComponent {
     @Inject(WEBAUDIO_SYNTH) private synth: WebAudioTinySynth,
     private changeDetector: ChangeDetectorRef
   ) {}
+
+  ngAfterViewInit(): void {
+    this.flexContainer.nativeElement.scrollTo({
+      left: 0,
+      top: this.rowHeight * 12 * 3.5,
+    });
+  }
 
   buildMidi() {
     if (this.playing) {

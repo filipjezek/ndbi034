@@ -1,8 +1,11 @@
-<div class="flex-container">
-  <ndbi034-keys></ndbi034-keys>
+<div class="flex-container" #flexCont>
+  <ndbi034-keys [firstOctave]="firstOctave" [octaves]="octaves"></ndbi034-keys>
   <ndbi034-grid
     (notesChange)="midiOptions.notes = $event; buildMidi()"
     [(timePosition)]="timePosition"
+    [firstOctave]="firstOctave"
+    [octaves]="octaves"
+    [rowHeight]="rowHeight"
   ></ndbi034-grid>
 </div>
 <ndbi034-options-bar

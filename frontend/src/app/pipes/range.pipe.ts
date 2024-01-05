@@ -9,7 +9,7 @@ export class RangePipe implements PipeTransform {
     const end = isNaN(+(value as any)) ? 0 : +(value as any);
     if (step === 0) throw new Error('step cannot be 0');
     const range = [];
-    for (let i = start; i < end; i += step) {
+    for (let i = start; i != end; i += step) {
       range.push(i);
     }
     return range;

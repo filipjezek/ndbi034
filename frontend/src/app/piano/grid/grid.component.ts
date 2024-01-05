@@ -38,16 +38,16 @@ export class GridComponent implements AfterViewInit {
   @Output() notesChange = new EventEmitter<(Note & { name: string })[]>();
   @Input() timePosition: number;
   @Output() timePositionChange = new EventEmitter<number>();
+  @Input() firstOctave: number;
+  @Input() octaves: number;
+  @Input() rowHeight: number;
 
   @ViewChild('canv') canvas: ElementRef<HTMLCanvasElement>;
   @ViewChildren(NoteComponent) noteComponents: QueryList<NoteComponent>;
 
   private ctx: CanvasRenderingContext2D;
-  rowHeight = 12;
   colWidth = 20;
   colCount = 100;
-  rowCount = 12;
-  private firstOctave = 3;
   private playingNote: number = null;
   private initialPosition: { x: number; y: number };
   private action: Action = Action.None;
@@ -102,7 +102,7 @@ export class GridComponent implements AfterViewInit {
     );
     this.ctx.fillStyle = '#f8f8f8';
     this.ctx.lineWidth = 0.5;
-    for (let i = 0; i < this.rowCount; i += 2) {
+    for (let i = 0; i < this.octaves * 12; i += 2) {
       this.ctx.fillRect(
         0,
         i * this.rowHeight,
@@ -111,7 +111,7 @@ export class GridComponent implements AfterViewInit {
       );
     }
 
-    for (let i = 0; i < this.rowCount; i++) {
+    for (let i = 0; i < this.octaves * 12; i++) {
       this.ctx.strokeStyle = i % 12 ? '#ccc' : '#aaa';
       this.ctx.beginPath();
       this.ctx.moveTo(0, i * this.rowHeight - 0.5);
@@ -122,7 +122,10 @@ export class GridComponent implements AfterViewInit {
       this.ctx.strokeStyle = i % 8 ? '#ccc' : '#aaa';
       this.ctx.beginPath();
       this.ctx.moveTo(i * this.colWidth - 0.5, 0);
-      this.ctx.lineTo(i * this.colWidth - 0.5, this.rowHeight * this.rowCount);
+      this.ctx.lineTo(
+        i * this.colWidth - 0.5,
+        this.rowHeight * this.octaves * 12
+      );
       this.ctx.stroke();
     }
   }
@@ -236,7 +239,7 @@ export class GridComponent implements AfterViewInit {
     const dy = this.clamp(
       this.floorTo0((e.clientY - this.initialPosition.y) / this.rowHeight),
       -this.currNote.y,
-      this.rowCount - this.currNote.y - 1
+      this.octaves * 12 - this.currNote.y - 1
     );
     if (dx || dy) {
       this.initialPosition = {
@@ -282,7 +285,7 @@ export class GridComponent implements AfterViewInit {
   private getNoteName(note: Note): string {
     return (
       noteNames[11 - (note.y % 12)] +
-      (this.firstOctave + Math.floor(note.y / 12))
+      (this.firstOctave + this.octaves - 1 - Math.floor(note.y / 12))
     );
   }
 

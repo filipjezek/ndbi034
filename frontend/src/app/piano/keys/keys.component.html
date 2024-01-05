@@ -1,16 +1,21 @@
-@for (key of scale; track key) {
-<button
-  class="key"
-  [class.black]="key.endsWith('#')"
-  [class.large]="
-    !key.endsWith('#') &&
-    (!scale[$index - 1]?.endsWith('#') || !scale[$index + 1]?.endsWith('#'))
-  "
-  (mouseenter)="isMouseDown ? openNote(key + octave) : null"
-  (mousedown)="openNote(key + octave)"
-  (mouseleave)="isMouseDown ? endNote(key + octave) : null"
-  (mouseup)="endNote(key + octave)"
->
-  {{ key.endsWith("#") ? "" : key }}{{ key == "C" ? octave : "" }}
-</button>
+@for (octave of firstOctave - 1 | range:octaves + firstOctave - 1:-1; track
+octave) {
+<div class="octave">
+  @for (key of scale; track key) {
+  <button
+    class="key"
+    [class.black]="key.endsWith('#')"
+    [class.large]="
+      !key.endsWith('#') &&
+      (!scale[$index - 1]?.endsWith('#') || !scale[$index + 1]?.endsWith('#'))
+    "
+    (mouseenter)="isMouseDown ? openNote(key + octave) : null"
+    (mousedown)="openNote(key + octave)"
+    (mouseleave)="isMouseDown ? endNote(key + octave) : null"
+    (mouseup)="endNote(key + octave)"
+  >
+    {{ key.endsWith("#") ? "" : key }}{{ key == "C" ? octave : "" }}
+  </button>
+  }
+</div>
 }

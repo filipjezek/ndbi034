@@ -1,12 +1,18 @@
 :host {
   --row-height: 12px;
+  --octave-count: 8;
 
   .flex-container {
     display: flex;
+    max-height: calc(var(--row-height) * 12 * 3);
+    overflow-y: auto;
   }
 
   ndbi034-keys {
     flex-basis: 140px;
+    position: sticky;
+    left: 0;
+    z-index: 1;
   }
   ndbi034-grid {
     flex-basis: 100%;

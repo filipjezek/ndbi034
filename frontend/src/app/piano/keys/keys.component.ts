@@ -9,16 +9,18 @@ import { GlobalEventService } from '../../services/global-event.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import WebAudioTinySynth from 'webaudio-tinysynth';
 import { WEBAUDIO_SYNTH, getNoteNumber, noteNames } from '../synth.token';
+import { RangePipe } from '../../pipes/range.pipe';
 
 @Component({
   selector: 'ndbi034-keys',
   standalone: true,
-  imports: [],
+  imports: [RangePipe],
   templateUrl: './keys.component.html',
   styleUrl: './keys.component.scss',
 })
 export class KeysComponent {
-  @Input() octave = 3;
+  @Input() octaves: number;
+  @Input() firstOctave: number;
   scale = noteNames.toReversed();
   @HostBinding('class.mousedown') isMouseDown = false;
 
