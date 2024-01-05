@@ -1,0 +1,43 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.controls {
+  display: flex;
+
+  button {
+    margin: 0 5px;
+    border: 2px solid #6592ea;
+    background: transparent;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+    font-size: 20px;
+    cursor: pointer;
+
+    &:hover {
+      background: #6592ea;
+      color: #fff;
+    }
+  }
+}
+
+input {
+  border: none;
+  border-bottom: 2px solid #6592ea;
+  font-size: 1em;
+  width: 60px;
+  margin-left: 5px;
+
+  &.ng-invalid {
+    border-bottom: 2px solid #ff0000;
+  }
+}

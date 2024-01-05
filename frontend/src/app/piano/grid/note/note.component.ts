@@ -1,9 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   Output,
+  ViewChild,
 } from '@angular/core';
 
 export interface Note {
@@ -28,4 +30,10 @@ export class NoteComponent {
   @Output() resizeLeft = new EventEmitter<void>();
   @Output() resizeRight = new EventEmitter<void>();
   @Output() move = new EventEmitter<MouseEvent>();
+
+  @ViewChild('noteEl') noteEl: ElementRef<HTMLDivElement>;
+
+  public focus() {
+    this.noteEl.nativeElement.focus();
+  }
 }

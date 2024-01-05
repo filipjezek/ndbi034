@@ -15,3 +15,20 @@ canvas {
 .curr-note ::ng-deep * {
   cursor: default !important;
 }
+
+.seeker {
+  width: 5px;
+  margin-left: -2px;
+  border: 2px solid transparent;
+  border-top: none;
+  background-clip: content-box;
+  background-color: red;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}

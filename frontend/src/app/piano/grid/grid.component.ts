@@ -4,10 +4,13 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   Inject,
+  Input,
+  Output,
+  QueryList,
   ViewChild,
-  ViewContainerRef,
-  ViewRef,
+  ViewChildren,
 } from '@angular/core';
 import { Note, NoteComponent } from './note/note.component';
 import { JsonPipe } from '@angular/common';
@@ -15,6 +18,13 @@ import { GlobalEventService } from '../../services/global-event.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import WebAudioTinySynth from 'webaudio-tinysynth';
 import { WEBAUDIO_SYNTH, getNoteNumber, noteNames } from '../synth.token';
+
+enum Action {
+  None,
+  Move,
+  Resize,
+  Seek,
+}
 
 @Component({
   selector: 'ndbi034-grid',
@@ -25,7 +35,13 @@ import { WEBAUDIO_SYNTH, getNoteNumber, noteNames } from '../synth.token';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GridComponent implements AfterViewInit {
+  @Output() notesChange = new EventEmitter<(Note & { name: string })[]>();
+  @Input() timePosition: number;
+  @Output() timePositionChange = new EventEmitter<number>();
+
   @ViewChild('canv') canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChildren(NoteComponent) noteComponents: QueryList<NoteComponent>;
+
   private ctx: CanvasRenderingContext2D;
   rowHeight = 12;
   colWidth = 20;
@@ -33,26 +49,41 @@ export class GridComponent implements AfterViewInit {
   rowCount = 12;
   private firstOctave = 3;
   private playingNote: number = null;
-  initialPosition: { x: number; y: number };
+  private initialPosition: { x: number; y: number };
+  private action: Action = Action.None;
 
   // sorted according to x
   notes: Note[] = [];
   currNote: Note;
-  backupNote: Note;
+  private backupNote: Note;
 
   constructor(
     private gEventS: GlobalEventService,
     private changeDetector: ChangeDetectorRef,
     @Inject(WEBAUDIO_SYNTH) private synth: WebAudioTinySynth
   ) {
-    this.gEventS.mouseReleased
-      .pipe(takeUntilDestroyed())
-      .subscribe(() => this.endNote());
+    this.gEventS.mouseReleased.pipe(takeUntilDestroyed()).subscribe(() => {
+      switch (this.action) {
+        case Action.Resize:
+        case Action.Move:
+          this.endNote();
+          break;
+        case Action.Seek:
+          this.stopSeeking();
+          break;
+      }
+    });
     this.gEventS.mouseMoved.pipe(takeUntilDestroyed()).subscribe((e) => {
-      if (this.initialPosition) {
-        this.moveNote(e);
-      } else {
-        this.resizeNote(e);
+      switch (this.action) {
+        case Action.Move:
+          this.moveNote(e);
+          break;
+        case Action.Resize:
+          this.resizeNote(e);
+          break;
+        case Action.Seek:
+          this.seekProgress(e);
+          break;
       }
     });
   }
@@ -97,6 +128,7 @@ export class GridComponent implements AfterViewInit {
   }
 
   startNote(e: MouseEvent): void {
+    this.action = Action.Resize;
     const x = Math.floor(e.offsetX / this.colWidth);
     const y = Math.floor(e.offsetY / this.rowHeight);
     this.currNote = { x, y, length: 1 };
@@ -104,7 +136,7 @@ export class GridComponent implements AfterViewInit {
   }
 
   resizeNote(e: MouseEvent): void {
-    if (!this.currNote) return;
+    if (this.action != Action.Resize) return;
     const bbox = this.canvas.nativeElement.getBoundingClientRect();
     const x = Math.floor((e.clientX - bbox.left) / this.colWidth);
     const length = x - this.currNote.x + 1;
@@ -116,15 +148,20 @@ export class GridComponent implements AfterViewInit {
   }
 
   endNote(): void {
+    this.action = Action.None;
     if (!this.currNote) return;
     if (this.currNote.length < 1) {
       this.currNote.x += this.currNote.length - 1;
       this.currNote.length = -this.currNote.length + 2;
     }
-    if (this.verifyNote(this.currNote)) {
+    const ok = this.verifyNote(this.currNote);
+    let noteToFocus: Note = null;
+    if (ok) {
       this.notes.push(this.currNote);
+      noteToFocus = this.currNote;
     } else if (this.backupNote) {
       this.notes.push(this.backupNote);
+      noteToFocus = this.backupNote;
     }
     this.currNote = null;
     this.backupNote = null;
@@ -133,6 +170,20 @@ export class GridComponent implements AfterViewInit {
     this.notes.sort((a, b) => a.x - b.x);
     this.changeDetector.markForCheck();
     this.stopPlaying();
+    if (ok) {
+      this.notesChange.emit(
+        this.notes.map((n) => ({ name: this.getNoteName(n), ...n }))
+      );
+    }
+    if (noteToFocus) {
+      setTimeout(() => {
+        this.noteComponents.forEach((n) => {
+          if (n.note === noteToFocus) {
+            n.focus();
+          }
+        });
+      });
+    }
   }
 
   private verifyNote(note: Note): boolean {
@@ -155,6 +206,7 @@ export class GridComponent implements AfterViewInit {
   }
 
   startResize(note: Note, left: boolean): void {
+    this.action = Action.Resize;
     this.backupNote = note;
     this.currNote = { ...note };
     this.notes = this.notes.filter((n) => n !== note);
@@ -166,6 +218,7 @@ export class GridComponent implements AfterViewInit {
   }
 
   startMove(note: Note, e: MouseEvent): void {
+    this.action = Action.Move;
     this.backupNote = note;
     this.currNote = { ...note };
     this.notes = this.notes.filter((n) => n !== note);
@@ -174,7 +227,7 @@ export class GridComponent implements AfterViewInit {
   }
 
   moveNote(e: MouseEvent) {
-    if (!this.currNote) return;
+    if (this.action != Action.Move) return;
     const dx = this.clamp(
       this.floorTo0((e.clientX - this.initialPosition.x) / this.colWidth),
       -this.currNote.x,
@@ -211,10 +264,7 @@ export class GridComponent implements AfterViewInit {
 
   private playCurrentNote(): void {
     if (!this.currNote) return;
-    const nn =
-      noteNames[this.currNote.y % 12] +
-      (this.firstOctave + Math.floor(this.currNote.y / 12));
-    const note = getNoteNumber(nn);
+    const note = getNoteNumber(this.getNoteName(this.currNote));
     if (note !== this.playingNote) {
       this.stopPlaying();
       this.synth.noteOn(1, note, 100);
@@ -227,5 +277,39 @@ export class GridComponent implements AfterViewInit {
       this.synth.noteOff(1, this.playingNote);
       this.playingNote = null;
     }
+  }
+
+  private getNoteName(note: Note): string {
+    return (
+      noteNames[11 - (note.y % 12)] +
+      (this.firstOctave + Math.floor(note.y / 12))
+    );
+  }
+
+  startSeeking(e: MouseEvent): void {
+    this.action = Action.Seek;
+    this.initialPosition = { x: e.clientX, y: e.clientY };
+  }
+
+  private seekProgress(e: MouseEvent): void {
+    if (this.action != Action.Seek) return;
+    const bbox = this.canvas.nativeElement.getBoundingClientRect();
+    const dx = this.clamp(
+      e.clientX - this.initialPosition.x,
+      bbox.left - this.initialPosition.x,
+      bbox.width + bbox.left - this.initialPosition.x
+    );
+    this.timePosition += (dx / this.colWidth) * 64;
+    this.initialPosition.x = this.clamp(
+      e.clientX,
+      bbox.left,
+      bbox.left + bbox.width
+    );
+    this.timePositionChange.emit(this.timePosition);
+    this.changeDetector.markForCheck();
+  }
+
+  private stopSeeking(): void {
+    this.action = Action.None;
   }
 }

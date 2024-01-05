@@ -1,2 +1,14 @@
-<ndbi034-keys></ndbi034-keys>
-<ndbi034-grid></ndbi034-grid>
+<div class="flex-container">
+  <ndbi034-keys></ndbi034-keys>
+  <ndbi034-grid
+    (notesChange)="midiOptions.notes = $event; buildMidi()"
+    [(timePosition)]="timePosition"
+  ></ndbi034-grid>
+</div>
+<ndbi034-options-bar
+  (bpmChange)="midiOptions.bpm = $event; buildMidi()"
+  (play)="play()"
+  (pause)="pause()"
+  (stop)="stop()"
+  [playing]="playing"
+></ndbi034-options-bar>

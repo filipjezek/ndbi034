@@ -1,6 +1,9 @@
 :host {
-  display: flex;
   --row-height: 12px;
+
+  .flex-container {
+    display: flex;
+  }
 
   ndbi034-keys {
     flex-basis: 140px;

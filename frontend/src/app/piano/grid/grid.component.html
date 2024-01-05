@@ -31,3 +31,9 @@
   [rowHeight]="rowHeight"
 ></ndbi034-note>
 }
+
+<div
+  class="seeker"
+  [style.left.px]="(timePosition * colWidth) / 64"
+  (mousedown)="startSeeking($event)"
+></div>

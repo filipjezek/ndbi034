@@ -11,7 +11,6 @@ import { SearchResultsComponent } from './search-results/search-results.componen
   imports: [
     CommonModule,
     PianoComponent,
-    OptionsBarComponent,
     SearchFormComponent,
     SearchResultsComponent,
   ],

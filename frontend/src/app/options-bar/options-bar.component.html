@@ -1,1 +1,42 @@
-<p>options-bar works!</p>
+<div class="controls">
+  @if (playing) {
+  <button
+    type="button"
+    title="pause"
+    class="material-symbols-outlined"
+    (click)="pause.emit()"
+  >
+    pause
+  </button>
+  } @else {
+  <button
+    type="button"
+    title="play"
+    class="material-symbols-outlined"
+    (click)="play.emit()"
+  >
+    play_arrow
+  </button>
+  }
+  <button
+    type="button"
+    title="stop"
+    class="material-symbols-outlined"
+    (click)="stop.emit()"
+  >
+    stop
+  </button>
+  <button
+    type="button"
+    title="search"
+    class="material-symbols-outlined"
+    (click)="search.emit()"
+  >
+    search
+  </button>
+</div>
+
+<label>
+  BPM
+  <input type="number" [formControl]="bpm" />
+</label>
