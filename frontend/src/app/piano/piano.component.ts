@@ -4,7 +4,9 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   Inject,
+  Output,
   ViewChild,
 } from '@angular/core';
 import { KeysComponent } from './keys/keys.component';
@@ -14,7 +16,6 @@ import { OptionsBarComponent } from '../options-bar/options-bar.component';
 import MidiWriter from 'midi-writer-js';
 import { WEBAUDIO_SYNTH } from './synth.token';
 import WebAudioTinySynth from 'webaudio-tinysynth';
-import { Writer } from 'midi-writer-js/build/types/writer';
 
 @Component({
   selector: 'ndbi034-piano',
@@ -26,6 +27,7 @@ import { Writer } from 'midi-writer-js/build/types/writer';
 })
 export class PianoComponent implements AfterViewInit {
   @ViewChild('flexCont') flexContainer: ElementRef<HTMLDivElement>;
+  @Output() search = new EventEmitter<Uint8Array>();
 
   midiOptions: { notes: (Note & { name: string })[]; bpm: number } = {
     notes: [],
@@ -34,7 +36,7 @@ export class PianoComponent implements AfterViewInit {
   octaves = 8;
   firstOctave = 0;
   rowHeight = 12;
-  private writer: Writer;
+  private file: Uint8Array;
   timePosition = 0;
   private timePositionInterval: any;
   playing = false;
@@ -71,14 +73,15 @@ export class PianoComponent implements AfterViewInit {
       );
       prevNoteEnd = note.x + note.length;
     });
-    this.writer = new MidiWriter.Writer(track);
+    const writer = new MidiWriter.Writer(track);
+    this.file = writer.buildFile();
   }
 
   play() {
-    if (!this.writer || this.playing) return;
+    if (!this.file || this.playing) return;
 
     this.playing = true;
-    this.synth.loadMIDI(this.writer.buildFile());
+    this.synth.loadMIDI(this.file);
     this.synth.locateMIDI(this.timePosition);
 
     this.synth.playMIDI();
@@ -102,5 +105,11 @@ export class PianoComponent implements AfterViewInit {
   stop() {
     this.pause();
     this.timePosition = 0;
+  }
+
+  submit() {
+    if (this.file?.length) {
+      this.search.emit(this.file);
+    }
   }
 }

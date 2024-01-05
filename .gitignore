@@ -2,3 +2,4 @@
 node_modules
 .vscode
 .angular
+backend/static/clean_midi
