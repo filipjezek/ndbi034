@@ -3,3 +3,5 @@ node_modules
 .vscode
 .angular
 backend/static/clean_midi
+backend/static/melody_midi
+__pycache__
