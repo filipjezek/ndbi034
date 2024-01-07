@@ -1,13 +1,16 @@
-from typing import TypeVar, Generic, Iterator
+from typing import TypeVar, Generic, Iterator, Callable
 
 T = TypeVar('T')
 
 class KContainer(Generic[T]):
-    def __init__(self, k: int):
+    def __init__(self, k: int, duplicate_key: Callable[[T, T], bool] = lambda x, y: x == y):
         self.k = k
         self.__values = []
+        self.duplicate_key = duplicate_key
         
     def add(self, value: T):
+        if next((x for x in self.__values if self.duplicate_key(x, value)), None) is not None:
+            return
         if len(self.__values) < self.k:
             self.__values.append(value)
         elif value > self.__values[-1]:

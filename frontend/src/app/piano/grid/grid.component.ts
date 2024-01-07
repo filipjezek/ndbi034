@@ -206,6 +206,9 @@ export class GridComponent implements AfterViewInit {
 
   deleteNote(note: Note): void {
     this.notes = this.notes.filter((n) => n !== note);
+    this.notesChange.emit(
+      this.notes.map((n) => ({ name: this.getNoteName(n), ...n }))
+    );
   }
 
   startResize(note: Note, left: boolean): void {
