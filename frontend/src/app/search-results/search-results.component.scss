@@ -1,0 +1,60 @@
+:host {
+  display: block;
+  padding: 10px;
+  background: #f7f7f7;
+}
+
+.result {
+  display: flex;
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: white;
+  box-shadow: 0 0 3px #00000078;
+  align-items: center;
+
+  .score {
+    margin-right: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .info {
+    flex-grow: 1;
+    text-align: right;
+
+    .title {
+      font-size: 1.2em;
+      margin-bottom: 5px;
+    }
+    .artist {
+      color: #333;
+    }
+  }
+}
+
+.loader {
+  display: block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 6px solid #6592ea;
+  border-right-color: rgb(101, 146, 234);
+  border-right-color: transparent;
+  animation: spin 1s infinite cubic-bezier(0.79, 0.14, 0.15, 0.86);
+  margin: auto;
+  margin-top: auto;
+  margin-top: 50px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

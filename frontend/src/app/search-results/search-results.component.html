@@ -1,1 +1,11 @@
-<p>search-results works!</p>
+@if (loading) {
+<div class="loader"></div>
+} @else { @for (res of results; track res.filename + res.score) {
+<div class="result">
+  <div class="score">{{ res.score }}</div>
+  <div class="info">
+    <div class="title">{{ replaceExt(res.filename.split("\\")[1]) }}</div>
+    <div class="artist">{{ res.filename.split("\\")[0] }}</div>
+  </div>
+</div>
+} }

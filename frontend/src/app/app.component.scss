@@ -1,0 +1,12 @@
+:host {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+
+  ndbi034-piano {
+    flex-shrink: 0;
+  }
+  ndbi034-search-results {
+    flex-grow: 1;
+  }
+}

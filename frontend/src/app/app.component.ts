@@ -1,7 +1,15 @@
-import { Component, DestroyRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PianoComponent } from './piano/piano.component';
-import { SearchResultsComponent } from './search-results/search-results.component';
+import {
+  Result,
+  SearchResultsComponent,
+} from './search-results/search-results.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,9 +24,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-  constructor(private http: HttpClient, private dRef: DestroyRef) {}
+  results: Result[] = [];
+  loading = false;
+
+  constructor(
+    private http: HttpClient,
+    private dRef: DestroyRef,
+    private changeDetector: ChangeDetectorRef
+  ) {}
 
   search(file: Uint8Array) {
     const formData = new FormData();
@@ -26,11 +42,14 @@ export class AppComponent {
       'midi',
       new File([file], 'upload.mid', { type: 'audio/midi' })
     );
+    this.loading = true;
     this.http
       .post('http://localhost:5000/api/midi_match', formData)
       .pipe(takeUntilDestroyed(this.dRef))
       .subscribe((data) => {
-        alert('ok');
+        this.results = data as Result[];
+        this.loading = false;
+        this.changeDetector.markForCheck();
       });
   }
 }
