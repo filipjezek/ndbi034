@@ -5,3 +5,6 @@ node_modules
 backend/static/clean_midi
 backend/static/melody_midi
 __pycache__
+backend/twlcsmodule/dist
+backend/twlcsmodule/build
+backend/twlcsmodule/twlcs.egg-info
