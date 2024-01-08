@@ -4,6 +4,7 @@ node_modules
 .angular
 backend/static/clean_midi
 backend/static/melody_midi
+backend/static/frontend_dist
 __pycache__
 backend/twlcsmodule/dist
 backend/twlcsmodule/build
